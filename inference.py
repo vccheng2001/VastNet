@@ -10,26 +10,38 @@ import os
 import datetime
 import time
 
-# Initialize the parameters
-confThreshold = 0.2 #Confidence threshold
-nmsThreshold = 0.4   #Non-maximum suppression threshold
-inpWidth = 320       #Width of network's input image
-inpHeight = 320      #Height of network's input image
+parser = argparse.ArgumentParser(description='Real-time object detection with Yolo-v3')
+# parser.add_argument('--image', help='Path to image file.')
+# parser.add_argument('--video', help='Path to video file.')
+parser.add_argument('--conf_threshold', type=float, default=0.25, help='Confidence threshold for detection')
+parser.add_argument('--nms_threshold', type=float, default=0.4, help='Non-maximal suppression threshold')
+parser.add_argument('--img_width', type=int, default=320, help='Input image width')
+parser.add_argument('--img_height', type=int, default=320, help='Input image height')
+parser.add_argument('--cfg_path', default='./darknet/cfg/', help='Model config directory')
+parser.add_argument('--data_path', default='./darknet/data/', help='Model weights directory')
+parser.add_argument('--model', default='yolov3', help='Model name')
 
-parser = argparse.ArgumentParser(description='Object Detection using YOLO in OPENCV')
-parser.add_argument('--image', help='Path to image file.')
-parser.add_argument('--video', help='Path to video file.')
 args = parser.parse_args()
 
+print('Args: ', args)
+# Parse arguments
+conf_threshold = args.conf_threshold
+nms_threshold = args.nms_threshold
+img_width = args.img_width
+img_height = args.img_height
+cfg_path = args.cfg_path
+data_path = args.data_path
+model = args.model
+
 # Load names of classes
-classesFile = "./darknet/data/coco.names"
+classesFile = f"{data_path}coco.names"
 classes = None
 with open(classesFile, 'rt') as f:
     classes = f.read().rstrip('\n').split('\n')
 
 # Give the configuration and weight files for the model and load the network using them.
-modelConfiguration = "./darknet/cfg/yolov3.cfg";
-modelWeights = "./darknet/cfg/yolov3.weights"
+modelConfiguration = f"{cfg_path}{model}.cfg";
+modelWeights = f"{cfg_path}{model}.weights"
 
 net = cv.dnn.readNetFromDarknet(modelConfiguration, modelWeights)
 net.setPreferableBackend(cv.dnn.DNN_BACKEND_OPENCV)
@@ -85,7 +97,7 @@ def postprocess(frame, outs):
                 print(f'{classes[classId]}: {confidence}')
                 
 
-            if confidence > confThreshold:
+            if confidence > conf_threshold:
                 center_x = int(detection[0] * frameWidth)
                 center_y = int(detection[1] * frameHeight)
                 width = int(detection[2] * frameWidth)
@@ -99,7 +111,7 @@ def postprocess(frame, outs):
 
     # Perform non maximum suppression to eliminate redundant overlapping boxes with
     # lower confidences. 
-    indices = cv.dnn.NMSBoxes(boxes, confidences, confThreshold, nmsThreshold)
+    indices = cv.dnn.NMSBoxes(boxes, confidences, conf_threshold, nms_threshold)
     for i in indices:
         box = boxes[i]
         left = box[0]
@@ -109,14 +121,14 @@ def postprocess(frame, outs):
         drawPred(classIds[i], confidences[i], left, top, left + width, top + height)
 
 # Process inputs
-winName = 'Deep learning object detection in OpenCV'
+winName = 'ESP32-CAM Object Detection with Yolo'
 cv.namedWindow(winName, cv.WINDOW_NORMAL)
 
-outputFile = "yolo_out_py.avi"
+outputFile = f"{model}_out.avi"
 # Webcam input
-url="http://192.168.12.233:81/stream"
+webserver_url="http://192.168.12.233:81/stream"
 CAMERA_BUFFER_SIZE=4096
-stream=urlopen(url)
+stream=urlopen(webserver_url)
 bts=b''
 
 
@@ -151,7 +163,7 @@ while cv.waitKey(100) < 0:
         # swaps blue, red channels
         blob = cv.dnn.blobFromImage(image=frame,
                                     scalefactor=1/255, # 1/sigma
-                                    size=(inpWidth, inpHeight), 
+                                    size=(img_width, img_height), 
                                     mean=[0,0,0], #openCV assumes images in BGR, but
                                     # mean value assumes RGB, hence swap RB
                                     swapRB=1,
