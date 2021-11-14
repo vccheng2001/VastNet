@@ -12,6 +12,7 @@ ARCH= -gencode arch=compute_30,code=sm_30 \
 
 # This is what I use, uncomment if you know your arch and want to specify
 # ARCH= -gencode arch=compute_52,code=compute_52
+ARCH = -gencode=arch=compute_50,code=sm_50
 
 VPATH=./src/:./examples
 SLIB=libdarknet.so
@@ -21,7 +22,7 @@ OBJDIR=./obj/
 
 CC=gcc
 CPP=g++
-NVCC=nvcc 
+NVCC=/usr/local/cuda-11.3/bin/nvcc
 AR=ar
 ARFLAGS=rcs
 OPTS=-Ofast

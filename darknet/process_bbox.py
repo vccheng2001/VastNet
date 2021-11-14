@@ -14,16 +14,33 @@ def process_bbox(json_file, out_dir):
         # Load items in json
         data = json.load(annotation)
         annots = data["annotations"]
+        imgs = data['images']
+
+        widths = {}
+        heights = {}
+
+        # store img width, height
+        for img in imgs:
+            widths[img['id']] = img['width']
+            heights[img['id']] = img['height']
+
 
         for annot in annots:
             id = annot["image_id"]
             x,y,w,h= annot["bbox"]
-            x1,y1,x2,y2 = x,y,x+w,y+h
-            bbox = [x1,y1,x2,y2]
+            cat = annot['category_id']
+            xc, yc = x+w/2, y+h/2
 
+            imw, imh = widths[id], heights[id]
+
+
+
+            bbox_norm = [xc / imw, yc / imh, w / imw, h / imh]
+
+            towrite = [cat] + bbox_norm
             out_file = os.path.join(out_dir, f'{id}.txt')          
             f = open(out_file, "w+")
-            f.write(' '.join([str(i) for i in bbox]))
+            f.write(' '.join([str(i) for i in towrite]))
             f.close()
 
 # displays bounding box over image 
@@ -49,7 +66,7 @@ def overlay_bbox(dir, id):
 # cd darknet
 json_file = 'custom_cfg/wildlife.json'
 out_dir = 'custom_dataset/'
-# process_bbox(json_file, out_dir)
+process_bbox(json_file, out_dir)
 
-overlay_bbox(out_dir, 9650)
+# overlay_bbox(out_dir, 59)
 
