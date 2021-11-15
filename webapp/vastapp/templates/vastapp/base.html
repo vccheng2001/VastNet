@@ -1,31 +1,54 @@
 <!doctype html>
-<html
+<html>
 	<!-- Base CSS template -->
 	<head>
 		<meta charset="utf-8">
-		<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 		{% load static %}
+
+
+		<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 		<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script> 
 		<script src="https://cdn.rawgit.com/nnattawat/flip/master/dist/jquery.flip.min.js"></script>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.8.2/css/lightbox.min.css">
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.8.2/js/lightbox.min.js"></script>
-    
-
 		<link rel="stylesheet" href="{% static 'vastapp/base.css' %}">
+
 		<title> {% block title %}  {% endblock %} </title>
 
 
 		</head>
 
 		{% block nav %}
-		
 
-		<form action="{% url 'home' %}" method="post">
-            {% csrf_token %}
-            Welcome to VASTN
-			<input name="next" type="hidden" value="{{ redirect_to }}">
-			<input type="submit" value="Go">
-		</form>
+		<nav class="navbar navbar-expand-lg navbar-light bg-light">
+			<a class="navbar-brand" href="#">VastNetApp</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+			  <span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarNavDropdown">
+			  <ul class="navbar-nav">
+				<li class="nav-item active">
+				  <a class="nav-link" href="#">Account<span class="sr-only">(current)</span></a>
+				</li>
+				<li class="nav-item">
+				  <a class="nav-link" href="#">Recent Captures</a>
+				</li>
+				<li class="nav-item">
+				  <a class="nav-link" href="#">Settings</a>
+				</li>
+				<li class="nav-item dropdown">
+				  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Analytics
+				  </a>
+				  <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+					<a class="dropdown-item" href="#">Trends</a>
+					<a class="dropdown-item" href="#">Inventory</a>
+				  </div>
+				</li>
+			  </ul>
+			</div>
+		  </nav>
+
 
 		{% endblock %}
 
