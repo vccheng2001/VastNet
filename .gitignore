@@ -1,7 +1,8 @@
 darknet/cfg_dataset/*
 darknet/custom_cfg/darknet53.conv74
-backup/*
+darknet/backup/*
 darknet/custom_dataset/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
