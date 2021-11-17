@@ -45,13 +45,10 @@ model = Yolov3Tiny(args)
 while True:
     img_file = random.choice(imgs)
     img = cv.imread(imgs_path+img_file)
+    img_with_annot, inference_time, predictions = model.predict_img(img, plot=False)
+    
 
-
-    print('processing img', img)
-
-    model.predict_img(img, plot=True)
-
-    # time.sleep(2)
+    time.sleep(4)
 
 
             

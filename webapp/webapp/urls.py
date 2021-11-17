@@ -17,7 +17,6 @@ from django.contrib import admin
 from django.urls import path, include
 from vastapp import views
 urlpatterns = [
-    path('', views.home, name='home'),
-    path('/', admin.site.urls),
-    path('vastapp/', include('vastapp.urls'), name="vastapp"),
+    path('admin/', admin.site.urls),
+    path('', include('vastapp.urls'), name="vastapp"),
 ]

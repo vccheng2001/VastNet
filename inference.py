@@ -9,6 +9,7 @@ from urllib.request import urlopen
 import os
 import datetime
 import time
+import matplotlib
 import matplotlib.pyplot as plt
 
 
@@ -87,8 +88,7 @@ class Yolov3Tiny:
         # subtracts mean values, scales by scalefactor
         # swaps blue, red channels
 
-        print('img', img.shape)
-        print(self.img_width, self.img_height)
+ 
         blob = cv.dnn.blobFromImage(image=img,
                                     scalefactor=1/255, # 1/sigma
                                     size=(self.img_width, self.img_height), 
@@ -103,11 +103,14 @@ class Yolov3Tiny:
         outs = self.net.forward(self.get_layer_names())
 
         # Remove the bounding boxes with low confidence
-        self.postprocess(img, outs)
+        # returns classIds, confidences, bbox_coords
+        predictions = self.postprocess(img, outs)
+        
         # Put efficiency information. The function getPerfProfile returns the overall time for inference(t) 
         # and the timings for each of the layers(in layersTimes)
         t, _ = self.net.getPerfProfile()
-        label = 'Inference time: %.2f ms' % (t * 1000.0 / cv.getTickFrequency())
+        inference_time = t * 1000.0 / cv.getTickFrequency()
+        label = 'Inference time: {%.2f} ms' % inference_time
 
         print(label)
         cv.putText(img, label, (0, 15), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255))
@@ -115,10 +118,14 @@ class Yolov3Tiny:
         if plot:
             # cv.imshow('frame', img)
             # cv.waitKey(1)
-            # cv.imwrite(f'out_{self.num_imgs_processed}.jpg', img)
             plt.figure()
             plt.imshow(img)
             plt.show()  
+        else:
+            cv.imwrite(f'out_{self.num_imgs_processed}.jpg', img)
+
+
+        return img, inference_time, predictions
 
 
 
@@ -130,7 +137,10 @@ class Yolov3Tiny:
         return [layersNames[i[0]-1] for i in self.net.getUnconnectedOutLayers()]
 
     # Draw the predicted bounding box
-    def draw_bboxes(self, frame, classId, conf, left, top, right, bottom):
+    def draw_bboxes(self, frame, classId, conf, bbox_coords):
+
+        left, top, right, bottom = bbox_coords
+
         # Draw a bounding box.
         cv.rectangle(frame, (left, top), (right, bottom), (255, 178, 50), 3)
 
@@ -150,6 +160,8 @@ class Yolov3Tiny:
 
     # Remove the bounding boxes with low confidence using non-maxima suppression
     def postprocess(self, frame, outs):
+        predictions = [] 
+
         frameHeight = frame.shape[0]
         frameWidth = frame.shape[1]
 
@@ -195,7 +207,11 @@ class Yolov3Tiny:
             top = box[1]
             width = box[2]
             height = box[3]
-            self.draw_bboxes(frame, classIds[i], confidences[i], left, top, left + width, top + height)
+            
+            bbox_coords = left, top, left+width, top+height
+            self.draw_bboxes(frame, classIds[i], confidences[i], bbox_coords)
+
+            predictions.append((classIds[i], confidences[i], bbox_coords))
 
 
 if __name__ == "__main__":
