@@ -5,6 +5,6 @@ urlpatterns =[
     # home
 
     path('home', views.home, name="home"),
-    path('', views.image_request, name = "image-request")  
+    path('process_image', views.process_image, name = "process_image")  
 
 ]

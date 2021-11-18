@@ -33,6 +33,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# Marks cookie as secure
+CSRF_COOKIE_SECURE=True
 
 # Application definition
 

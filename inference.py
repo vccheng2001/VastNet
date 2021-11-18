@@ -13,6 +13,26 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 
+class Args:
+    def __init__(self, conf_threshold=0.25,
+                       nms_threshold=0.4,
+                       img_width=416,
+                       img_height=416,
+                       cfg_path='./darknet/cfg/',
+                       data_path='./darknet/data/',
+                       model='yolov3-tiny',
+                       classes_file='coco.names',
+                       webserver_url='http://192.168.12.233:81/stream'):
+        self.conf_threshold = conf_threshold
+        self.nms_threshold = nms_threshold
+        self.img_width = img_width
+        self.img_height = img_height
+        self.cfg_path = cfg_path
+        self.data_path = data_path
+        self.model = model
+        self.classes_file = classes_file
+        self.webserver_url=webserver_url
+
 
 class Yolov3Tiny:
     def __init__(self, args):
@@ -31,7 +51,7 @@ class Yolov3Tiny:
         
 
 
-
+        
         with open(self.classes_file, 'rt') as f:
             self.classes = f.read().rstrip('\n').split('\n')
 
@@ -121,8 +141,8 @@ class Yolov3Tiny:
             plt.figure()
             plt.imshow(img)
             plt.show()  
-        else:
-            cv.imwrite(f'out_{self.num_imgs_processed}.jpg', img)
+        # else:
+        #     cv.imwrite(f'out_{self.num_imgs_processed}.jpg', img)
 
 
         return img, inference_time, predictions

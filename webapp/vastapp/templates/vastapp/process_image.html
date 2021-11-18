@@ -1,0 +1,26 @@
+{% extends 'vastapp/base.html' %}  
+  
+      
+{% block heading %}
+Recent Captures 
+{% endblock %}
+
+
+{% block body %} 
+
+<img src="data:image/jpg;base64,{{ img }}"/>
+hello
+{% for cap in captures %}
+
+    <!-- store countries that logged-in user has been to -->
+    {% if cap.image %}
+        {{cap.image}}
+        <h3>Inference Time: {{cap.inference_time}}</h3>
+        <img src="data:image/jpg;base64, {{cap.image}}"></img>
+
+    {% endif %}
+{% endfor %}
+
+    
+  
+{% endblock body %}  

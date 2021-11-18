@@ -10,29 +10,11 @@ import os
 import datetime
 import time
 import random
-from inference import Yolov3Tiny
+from inference import Yolov3Tiny, Args
+import requests
 
 
 
-class Args:
-    def __init__(self, conf_threshold=0.25,
-                       nms_threshold=0.4,
-                       img_width=416,
-                       img_height=416,
-                       cfg_path='./darknet/cfg/',
-                       data_path='./darknet/data/',
-                       model='yolov3-tiny',
-                       classes_file='coco.names',
-                       webserver_url='http://192.168.12.233:81/stream'):
-        self.conf_threshold = conf_threshold
-        self.nms_threshold = nms_threshold
-        self.img_width = img_width
-        self.img_height = img_height
-        self.cfg_path = cfg_path
-        self.data_path = data_path
-        self.model = model
-        self.classes_file = classes_file
-        self.webserver_url=webserver_url
 
 
 imgs_path = './example_images/'
@@ -46,9 +28,21 @@ while True:
     img_file = random.choice(imgs)
     img = cv.imread(imgs_path+img_file)
     img_with_annot, inference_time, predictions = model.predict_img(img, plot=False)
+
+    
     
 
-    time.sleep(4)
+    url = "localhost:8000/image_request"
+    file_obj = {'image': open(imgs_path+img_file, 'rb')}
+    payload = {
+        'remark1': 'hey',
+        'remark2': 'hello',
+    }
+    r = requests.post("http://127.0.0.1:8000/process_image", files=file_obj, data=payload)
+
+    print(r.status_code)
+            
+    time.sleep(10000)
 
 
             
