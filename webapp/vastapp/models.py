@@ -13,5 +13,4 @@ class UploadImage(models.Model):
 class Capture(models.Model):  
     # image = models.FileField(blank=True)
     inference_time = models.CharField(max_length=50,null=True)
-
-    image = Base64Field(max_length=900000, blank=True, null=True)
+    image = models.ImageField(upload_to='captures/',null=True, blank=True)
