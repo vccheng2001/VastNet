@@ -6,6 +6,9 @@ from django.views.decorators.csrf import csrf_exempt
 from .forms import UserImageForm  
 from .models import UploadImage, Capture
 
+# Download the helper library from https://www.twilio.com/docs/python/install
+import os
+from twilio.rest import Client
 from django.core.files.base import ContentFile
 
 from PIL import Image
@@ -37,6 +40,22 @@ def process_image(request):
     if request.method == 'POST':  
 
         if request.FILES.get("image", None) is not None:
+
+            # Find your Account SID and Auth Token at twilio.com/console
+            # and set the environment variables. See http://twil.io/secure
+            account_sid = 'AC147174888cada5d58041821c8e477d2c'
+            auth_token = '353ed3df37e886ef162fd4376040ba6c'
+            client = Client(account_sid, auth_token)
+
+            message = client.messages \
+                            .create(
+                                body="VAST-Net noticed something unusual, deploy the drone!",
+                                from_='+18285547879',
+                                to='+16262176595'
+                            )
+
+            print(message.sid)
+
                 
             
             img_file = request.FILES["image"].read()
@@ -74,6 +93,6 @@ def yolo_detect(img):
     
     img_with_annot, inference_time, predictions = model.predict_img(img, plot=False)
 
-
-    print(inference_time, predictions)
+    
+    # print(inference_time, predictions)
     return img_with_annot, inference_time, predictions
