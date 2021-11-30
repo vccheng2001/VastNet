@@ -143,7 +143,7 @@ class Yolov3Tiny:
             plt.show()  
         # else:
         #     cv.imwrite(f'out_{self.num_imgs_processed}.jpg', img)
-
+        print("PREDDD",predictions)
 
         return img, inference_time, predictions
 
@@ -231,8 +231,9 @@ class Yolov3Tiny:
             bbox_coords = left, top, left+width, top+height
             self.draw_bboxes(frame, classIds[i], confidences[i], bbox_coords)
 
-            predictions.append((classIds[i], confidences[i], bbox_coords))
+            predictions.append((self.classes[classIds[i]], confidences[i], bbox_coords))
 
+        return predictions
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Real-time object detection with Yolo-v3')

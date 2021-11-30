@@ -41,20 +41,20 @@ def process_image(request):
 
         if request.FILES.get("image", None) is not None:
 
-            # Find your Account SID and Auth Token at twilio.com/console
-            # and set the environment variables. See http://twil.io/secure
-            account_sid = 'AC147174888cada5d58041821c8e477d2c'
-            auth_token = '353ed3df37e886ef162fd4376040ba6c'
-            client = Client(account_sid, auth_token)
+            # # Find your Account SID and Auth Token at twilio.com/console
+            # # and set the environment variables. See http://twil.io/secure
+            # account_sid = 'AC147174888cada5d58041821c8e477d2c'
+            # auth_token = '353ed3df37e886ef162fd4376040ba6c'
+            # client = Client(account_sid, auth_token)
 
-            message = client.messages \
-                            .create(
-                                body="VAST-Net noticed something unusual, deploy the drone!",
-                                from_='+18285547879',
-                                to='+16262176595'
-                            )
+            # message = client.messages \
+            #                 .create(
+            #                     body="VAST-Net noticed something unusual, deploy the drone!",
+            #                     from_='+18285547879',
+            #                     to='+16262176595'
+            #                 )
 
-            print(message.sid)
+            # print(message.sid)
 
                 
             
@@ -64,20 +64,36 @@ def process_image(request):
             # yolo detect 
             img_with_annot, inference_time, predictions = yolo_detect(img)
 
-            # img_b64 = base64.b64encode(img_with_annot).decode('utf-8')
 
-            ret, buf = cv.imencode('.jpg', img_with_annot) 
+            # save as jpg in captures/ folder 
+            ret, buf = cv.imencode('.jpg', img_with_annot)
             content = ContentFile(buf.tobytes())
 
 
+            # create new Capture
             cap = Capture()
+            cap.inference_time = inference_time
             now =  datetime.datetime.now().isoformat()
+            cap.image.save(f'{now}.jpg', content) # save 
 
-            cap.image.save(f'{now}.jpg', content)
-            
+            # save highest confidence class
+            cap.pred_1 = predictions[0][0]
+            cap.conf_1 = round(predictions[0][1] * 100, 2)
+
+            try:
+                cap.pred_2 = predictions[1][0]
+                cap.conf_2 = round(predictions[1][1] * 100, 2)
+            except: pass 
+
+            try:
+                cap.pred_3 = predictions[2][0]
+                cap.conf_3 = round(predictions[2][1] * 100, 2)
+            except: pass
+
 
             context["captures"] = Capture.objects.all()
-            # context['img_b64'] = img_file
+            cap.save()
+        
             return render(request, 'vastapp/process_image.html', context=context)
 
     context["captures"] = Capture.objects.all()
