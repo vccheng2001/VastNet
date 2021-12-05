@@ -27,6 +27,7 @@ def process_bbox(json_file, out_dir):
 
         for annot in annots:
             id = annot["image_id"]
+            # top left corner, width, height 
             x,y,w,h= annot["bbox"]
             cat = annot['category_id']
             xc, yc = x+w/2, y+h/2
@@ -40,6 +41,7 @@ def process_bbox(json_file, out_dir):
             towrite = [cat] + bbox_norm
             out_file = os.path.join(out_dir, f'{id}.txt')          
             f = open(out_file, "w+")
+            # print('writing file', id)
             f.write(' '.join([str(i) for i in towrite]))
             f.close()
 
@@ -55,8 +57,18 @@ def process_bbox(json_file, out_dir):
 def overlay_bbox(dir, id):
     img_file = os.path.join(dir, f'{id}.jpg')
     bbox_file  = os.path.join(dir, f'{id}.txt')  
-    x1,y1,x2,y2= np.loadtxt(bbox_file)
+    label, xc,yc,w,h= np.loadtxt(bbox_file)
+    
+    print('label:', label)
     img =  cv2.imread(img_file)
+    
+
+    im_w, im_h, _ = img.shape
+    x1 = (xc-(h/2))*im_h
+    x2 = (xc+(h/2))*im_h
+    y1 = (yc-(w/2))*im_w
+    y2 = (yc+(w/2))*im_w
+    print('BBOX', x1,y1,x2,y2)
     
 
     img_with_bbox = cv2.rectangle(img, (int(x1),int(y1)), (int(x2),int(y2)), (0,255,0), 2)
@@ -66,7 +78,9 @@ def overlay_bbox(dir, id):
 # cd darknet
 json_file = 'custom_cfg/wildlife.json'
 out_dir = 'custom_dataset/'
-process_bbox(json_file, out_dir)
+# process_bbox(json_file, out_dir)
 
-# overlay_bbox(out_dir, 59)
+# 530->690
+# 1087+1208
+overlay_bbox(out_dir, 1102)
 
