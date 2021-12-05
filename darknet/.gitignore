@@ -19,6 +19,7 @@ cfg/
 darknet
 .fuse*
 custom_dataset/*
+darknet/custom_cfg/darknet53.conv.74
 
 
 # OS Generated #
