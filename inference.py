@@ -21,6 +21,7 @@ class Args:
                        cfg_path='./darknet/cfg/',
                        data_path='./darknet/data/',
                        model='yolov3-tiny',
+                       custom_weights=None,
                        classes_file='coco.names',
                        webserver_url='http://192.168.12.233:81/stream'):
         self.conf_threshold = conf_threshold
@@ -30,6 +31,7 @@ class Args:
         self.cfg_path = cfg_path
         self.data_path = data_path
         self.model = model
+        self.custom_weights = custom_weights
         self.classes_file = classes_file
         self.webserver_url=webserver_url
 
@@ -45,6 +47,7 @@ class Yolov3Tiny:
         self.cfg_path = args.cfg_path
         self.data_path = args.data_path
         self.model = args.model
+        self.custom_weights = args.custom_weights
         self.classes_file = f"{self.data_path}{args.classes_file}"
         self.webserver_url=args.webserver_url
 
@@ -57,7 +60,11 @@ class Yolov3Tiny:
 
         # Give the configuration and weight files for the model and load the network using them.
         model_cfg = f"{self.cfg_path}{self.model}.cfg"
-        model_weights = f"{self.cfg_path}{self.model}.weights"
+
+        if self.custom_weights != None:
+            model_weights = self.custom_weights
+        else:
+            model_weights = f"{self.cfg_path}{self.model}.weights"
 
         # load network using cfg, weights
         self.net = cv.dnn.readNetFromDarknet(model_cfg, model_weights)
@@ -108,6 +115,7 @@ class Yolov3Tiny:
         # subtracts mean values, scales by scalefactor
         # swaps blue, red channels
 
+        # img=cv.resize(img, (self.img_width, self.img_height))
  
         blob = cv.dnn.blobFromImage(image=img,
                                     scalefactor=1/255, # 1/sigma
@@ -132,7 +140,7 @@ class Yolov3Tiny:
         inference_time = t * 1000.0 / cv.getTickFrequency()
         label = 'Inference time: {%.2f} ms' % inference_time
 
-        print(label)
+        # print(label)
         cv.putText(img, label, (0, 15), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255))
 
         if plot:
@@ -143,8 +151,6 @@ class Yolov3Tiny:
             plt.show()  
         # else:
         #     cv.imwrite(f'out_{self.num_imgs_processed}.jpg', img)
-        print("PREDDD",predictions)
-
         return img, inference_time, predictions
 
 
@@ -201,8 +207,8 @@ class Yolov3Tiny:
 
                 classId = np.argmax(scores)
                 confidence = scores[classId]
-                if sum(scores) != 0:
-                    print(f'{self.classes[classId]}: {confidence}')
+                # if sum(scores) != 0:
+                #     print(f'{self.classes[classId]}: {confidence}')
                     
 
                 if confidence > self.conf_threshold:
@@ -245,6 +251,8 @@ if __name__ == "__main__":
     parser.add_argument('--img_height', type=int, default=416, help='Input image height')
     parser.add_argument('--cfg_path', default='./darknet/cfg/', help='Model config directory')
     parser.add_argument('--data_path', default='./darknet/data/', help='Model weights directory')
+    parser.add_argument('--custom_weights', default=None, help='Custom model weights')
+
     parser.add_argument('--model', default='yolov3-tiny', help='Model name')
     parser.add_argument('--classes_file', default='coco.names', help='label')
     parser.add_argument('--webserver_url', default="http://192.168.12.233:81/stream", help='stream url')

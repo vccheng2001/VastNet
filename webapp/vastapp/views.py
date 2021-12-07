@@ -64,37 +64,42 @@ def process_image(request):
             # yolo detect 
             img_with_annot, inference_time, predictions = yolo_detect(img)
 
-
-            # save as jpg in captures/ folder 
-            ret, buf = cv.imencode('.jpg', img_with_annot)
-            content = ContentFile(buf.tobytes())
+            if len(predictions) > 0:
 
 
-            # create new Capture
-            cap = Capture()
-            cap.inference_time = inference_time
-            now =  datetime.datetime.now().isoformat()
-            cap.image.save(f'{now}.jpg', content) # save 
+                # save as jpg in captures/ folder 
+                ret, buf = cv.imencode('.jpg', img_with_annot)
+                content = ContentFile(buf.tobytes())
 
-            # save highest confidence class
-            cap.pred_1 = predictions[0][0]
-            cap.conf_1 = round(predictions[0][1] * 100, 2)
+                # create new Capture
+                cap = Capture()
+                cap.inference_time = inference_time
+                now =  datetime.datetime.now().isoformat()
+                cap.image.save(f'{now}.jpg', content) # save 
 
-            try:
-                cap.pred_2 = predictions[1][0]
-                cap.conf_2 = round(predictions[1][1] * 100, 2)
-            except: pass 
+                # save highest confidence class
+                cap.pred_1 = predictions[0][0]
+                cap.conf_1 = round(predictions[0][1] * 100, 2)
 
-            try:
-                cap.pred_3 = predictions[2][0]
-                cap.conf_3 = round(predictions[2][1] * 100, 2)
-            except: pass
+                try:
+                    cap.pred_2 = predictions[1][0]
+                    cap.conf_2 = round(predictions[1][1] * 100, 2)
+                except: pass 
+
+                try:
+                    cap.pred_3 = predictions[2][0]
+                    cap.conf_3 = round(predictions[2][1] * 100, 2)
+                except: pass
 
 
-            context["captures"] = Capture.objects.all()
-            cap.save()
-        
-            return render(request, 'vastapp/process_image.html', context=context)
+                context["captures"] = Capture.objects.all()
+                cap.save()
+            
+                return render(request, 'vastapp/process_image.html', context=context)
+
+            else:
+                context["captures"] = Capture.objects.all()
+                return render(request, 'vastapp/process_image.html', context=context)  
 
     context["captures"] = Capture.objects.all()
     return render(request, 'vastapp/process_image.html', context=context)  
@@ -106,6 +111,8 @@ def yolo_detect(img):
     args.data_path = "../darknet/data/"
     args.cfg_path = "../darknet/cfg/"
     model = Yolov3Tiny(args)
+    args.custom_weights = './darknet/small.weights'
+
     
     img_with_annot, inference_time, predictions = model.predict_img(img, plot=False)
 

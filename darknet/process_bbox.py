@@ -7,6 +7,11 @@ import time
 import os 
 import numpy as np
 import cv2
+import shutil
+
+    
+
+
 # process annotations from json file, write 
 # as txt file with same name as img
 def process_bbox(json_file, out_dir):
@@ -30,6 +35,7 @@ def process_bbox(json_file, out_dir):
             # top left corner, width, height 
             x,y,w,h= annot["bbox"]
             cat = annot['category_id']
+                
             xc, yc = x+w/2, y+h/2
 
             imw, imh = widths[id], heights[id]
@@ -40,7 +46,12 @@ def process_bbox(json_file, out_dir):
 
             towrite = [cat] + bbox_norm
             out_file = os.path.join(out_dir, f'{id}.txt')          
-            f = open(out_file, "w+")
+            f = open(out_file, "w")
+
+            # if id == "6995":
+            #     print('out_file', out_file)
+            #     print(towrite)
+            #     exit(-1)
             # print('writing file', id)
             f.write(' '.join([str(i) for i in towrite]))
             f.close()
@@ -78,9 +89,9 @@ def overlay_bbox(dir, id):
 # cd darknet
 json_file = 'custom_cfg/wildlife.json'
 out_dir = 'custom_dataset/'
-# process_bbox(json_file, out_dir)
+process_bbox(json_file, out_dir)
 
 # 530->690
 # 1087+1208
-overlay_bbox(out_dir, 1102)
+# overlay_bbox(out_dir, 1671)
 

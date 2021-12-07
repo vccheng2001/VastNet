@@ -3,6 +3,10 @@ darknet/custom_cfg/darknet53.conv74
 darknet/backup/*
 darknet/custom_dataset/*
 webapp/media*
+*.weights
+*_cfg/
+*_dataset/
+webapp/media*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

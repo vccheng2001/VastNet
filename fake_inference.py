@@ -17,32 +17,29 @@ import requests
 
 
 
-imgs_path = './example_images/'
+imgs_path = './darknet/small_dataset/'
 imgs = os.listdir(imgs_path)
-args = Args()
-
-# initialize net   
-model = Yolov3Tiny(args)
 
 while True:
     img_file = random.choice(imgs)
+
+    if img_file.endswith('txt'):continue
     img = cv.imread(imgs_path+img_file)
-    img_with_annot, inference_time, predictions = model.predict_img(img, plot=False)
 
+    # sends an image every 5 seconds
+    try:
+        file_obj = {'image': open(imgs_path+img_file, 'rb')}
+        r = requests.post("http://127.0.0.1:8000/process_image", files=file_obj)
+        # min number seconds before next image sent 
+        time.sleep(5)
+
+    except Exception as e:
+        print(str(e))
+   
     
     
 
-    url = "localhost:8000/image_request"
-    file_obj = {'image': open(imgs_path+img_file, 'rb')}
-    payload = {
-        'remark1': 'hey',
-        'remark2': 'hello',
-    }
-    r = requests.post("http://127.0.0.1:8000/process_image", files=file_obj, data=payload)
-
-    print(r.status_code)
-            
-    time.sleep(10000)
+    
 
 
             
