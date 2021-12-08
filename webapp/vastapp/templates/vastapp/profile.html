@@ -1,0 +1,61 @@
+{% extends "vastapp/base.html" %}
+{% load i18n %}
+
+{% block heading %}
+<!-- 'About' section for user -->
+<div class="jumbotron text-center bg-dark text-white">
+    <h3 class="display-4">Account Settings</h3>
+</div>
+{% endblock %}
+
+
+
+<!-- Page Content -->
+{% block body %}
+<div class="row profile">
+
+    <div class="col-md-8 center">
+        {% if profile.picture %}
+        <img id="id_user_picture" class="center" src="{% url 'get_picture' id=profile.user.id %}" width=70% height=90%>
+        {% else %}
+        <img id="id_user_picture" class="center" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="img-responsive" alt="">
+        {% endif %}
+
+       
+    </div>
+
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+          <h3 class="card-subtitle mb-2 text-muted">{{profile.user}}</h3>
+          <br>
+          <p class="card-text mb-2 text-muted">Student at CMU</p>
+          <!-- <a href="#" class="card-link">Card link</a>
+          <a href="#" class="card-link">Another link</a> -->
+        </div>
+    </div>
+
+</div>
+
+<br><br>
+
+
+<div class="container">
+
+    <div class="profile-panel">
+        <form enctype="multipart/form-data" action="{% url 'update_profile' %}" method="post">
+            {% for field in form %}
+            <div>
+                <label class="display-6" for="{{ field.label }}">{{ field.label_tag }}
+                <!-- <br> -->
+                {{ field }}
+            </div>
+            {% endfor %}
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success">{% trans 'Save changes' %}</button>
+            {% csrf_token %}
+        </form>
+    </div>
+</div>
+
+
+{% endblock %}

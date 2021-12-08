@@ -1,75 +1,94 @@
-{% extends "vastapp/base.html" %}
+{% extends 'vastapp/base.html' %}
+{% load static %}
 
 
 {% block heading %}
-<h3 class="display-4">Recent Captures</h3>
+
+
+<h3 class="display-4">Dashboard</h3>
+
+
+{% if most_freq_animal %}
+<div class="alert alert-secondary" role="alert">
+  <div class="display-5">Most frequent animal: {{most_freq_animal}}</div>
+ </div>
+{% endif %}
+
+{% if warning_msg %}
+<div class="alert alert-danger" role="alert">
+   <div class="display-5">{{warning_msg}}</div>
+  </div>
+{% endif %}
+
+
+
+<!-- 
 <h3>Location: Frick Park, Pittsburgh PA</h3>
 <img src="https://cdn-assets.alltrails.com/static-map/production/area/10120419/parks-us-pennsylvania-frick-park-10120419-20210804220732000000000-763x240-1.png">
-<hr>
+<hr> -->
 {% endblock %}
 
 
 {% block body %}
 
-<div class="row">
-    <div class="col-sm-3">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Cats: 5</h5>
-          <img src="https://miro.medium.com/max/1024/1*L55OueLNLo1qPiIjbZhlhg.jpeg" width=70% height=70%>
 
-          <p class="card-text">Time: 2021-11-10 09:30AM</p>
-          <p class="card-text">Location: Frick Park West</p>
-          <a href="#" class="btn btn-primary">View</a>
-        </div>
-      </div>
-    </div>
-    <div class="col-sm-3">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Dog:1, Bird:1</h5>
-          <img src="https://images.squarespace-cdn.com/content/v1/52c62b4be4b0ca96fb3cfcba/1551800809893-SWPT67OMVB0G8FOGZE4U/result_23.jpg" width=70% height=70%>
-          <p class="card-text">Time: 2021-11-09 2:30PM</p>
-          <p class="card-text">Location: Frick Park South</p>
-          <a href="#" class="btn btn-primary">View</a>
-        </div>
-      </div>
-    </div>
-    <div class="col-sm-3">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Adipose: 3</h5>
-          <img src="https://blog.roboflow.com/content/images/2020/08/image-57.png" width=70% height=70%>
-          <p class="card-text">Time: 2021-11-09 1:45PM</p>
-          <p class="card-text">Location: Frick Park East</p>
-          <a href="#" class="btn btn-primary">View</a>
-        </div>
-      </div>
-    </div>
-    <div class="col-sm-3">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Wolves: 2</h5>
-          <img src="https://images.squarespace-cdn.com/content/v1/52c62b4be4b0ca96fb3cfcba/1551800808966-70BYZ6SLYAYBON6S0E05/result_27.jpg" width=70% height=70%>
-          <p class="card-text">Time: 2021-11-09 11:10AM</p>
-          <p class="card-text">Location: Frick Park East</p>
-          <a href="#" class="btn btn-primary">View</a>
-        </div>
-      </div>
-    </div>
-    <div class="col-sm-3">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Cows: 5</h5>
-          <img src="https://www.researchgate.net/profile/William-Andrew/publication/322650835/figure/fig2/AS:775590336536576@1561926554972/Species-Detection-and-Localisation-Examples-of-species-detection-and-localisation-for.jpg" width=70% height=70%>
-          <p class="card-text">Time: 2021-11-09 7:10AM</p>
-          <p class="card-text">Location: Frick Park East</p>
-          <a href="#" class="btn btn-primary">View</a>
-        </div>
-      </div>
-    </div>
 
+<h3 class="display-4">Frequency of animals captured</h3>
+{% if graph %}
+{{ graph|safe }}
+{% else %}
+<p>No data to show.</p>
+{% endif %}
+
+<h3 class="display-4">Captures over time</h3>
+
+{% if time_graph %}
+{{ time_graph|safe }}
+{% else %}
+<p>No data to show.</p>
+{% endif %}
+
+
+<!-- <div class="card text-center">
+  <div class="card-header">
+    Featured
   </div>
+  <div class="card-body">
+    <h5 class="card-title">Special title treatment</h5>
+    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+    <a href="#!" class="btn btn-primary">Go somewhere</a>
+  </div>
+  <div class="card-footer text-muted">
+    2 days ago
+  </div>
+</div> -->
+
+
+
+<!-- <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+  <div class="carousel-inner">
+   
+    {% for cap in rand_captures %}
+      {{cap.image.url}}
+      <div class="carousel-item active">
+        <img src="https://www.w3schools.com/bootstrap/la.jpg" alt="Los Angeles" style="width:100%;">
+      </div>
+    {% endfor %}
+
+    div class="carousel-item active">
+        <img src="https://www.w3schools.com/bootstrap/la.jpg" alt="Los Angeles" style="width:100%;">
+      </div>
+  
+  </div>
+  <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div> -->
 
 
 {% endblock %}

@@ -20,6 +20,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path('', views.login_action, name='login'),
+
     path('admin/', admin.site.urls),
     path('', include('vastapp.urls'), name="vastapp"),
 ]

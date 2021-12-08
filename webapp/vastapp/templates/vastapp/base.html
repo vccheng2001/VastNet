@@ -5,13 +5,13 @@
 		<meta charset="utf-8">
 		{% load static %}
 
-		<link rel="stylesheet" href="{% static 'vastapp/base.css' %}">
 
 		<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 		<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script> 
 		<script src="https://cdn.rawgit.com/nnattawat/flip/master/dist/jquery.flip.min.js"></script>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.8.2/css/lightbox.min.css">
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.8.2/js/lightbox.min.js"></script>
+		<link rel="stylesheet" href="{% static 'vastapp/base.css' %}">
 
 		<title> {% block title %}  {% endblock %} </title>
 
@@ -21,17 +21,17 @@
 		{% block nav %}
 
 		<nav class="navbar navbar-expand-lg navbar-light bg-light">
-			<a class="navbar-brand" href="#">VastNetApp</a>
+			<a class="navbar-brand" href="{% url 'home' %}">VastNetApp</a>
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
 			  <span class="navbar-toggler-icon"></span>
 			</button>
 			<div class="collapse navbar-collapse" id="navbarNavDropdown">
 			  <ul class="navbar-nav">
 				<li class="nav-item active">
-				  <a class="nav-link" href="#">Account<span class="sr-only">(current)</span></a>
+				  <a class="nav-link" href="{% url 'profile' %}">Account<span class="sr-only">(current)</span></a>
 				</li>
 				<li class="nav-item">
-				  <a class="nav-link" href="#">Recent Captures</a>
+				  <a class="nav-link" href="{% url 'process_image' %}">Recent Captures</a>
 				</li>
 				<li class="nav-item">
 				  <a class="nav-link" href="#">Settings</a>

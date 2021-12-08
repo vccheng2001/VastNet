@@ -1,0 +1,25 @@
+{% extends "vastapp/base.html" %}
+{% load i18n %}
+
+{% block nav %}
+{% endblock %}
+
+{% block heading %}
+    <div class="jumbotron text-center">
+        <h1 class="display-4 text-muted">{% trans 'Login to VastApp' %}</h1>
+    </div>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <form method="post" action="{% url 'login' %}">
+        <table>
+        {{ form }}
+        </table>
+        {% csrf_token %}
+        <hr>
+        <button type="submit" class="btn btn-success">{% trans "submit" %}</button>
+        <a href="{% url 'register' %}" class="btn btn-secondary">{% trans "signup" %}</a>
+    </form>
+</div>
+{% endblock %}

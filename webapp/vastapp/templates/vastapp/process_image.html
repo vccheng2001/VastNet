@@ -12,26 +12,28 @@
 {% block body %} 
 
 
+
 <div class="row">
+   
    {% for cap in captures reversed %}
 
     <div class="col-sm-4">
         <div class="card">
         <div class="card-body">
-            <h3 class="card-title">Captured at {{cap.timestamp}}</h3>
+            <h2 class="col-sm-9 text-muted">{{cap.timestamp}}</h2>
             <p class="card-text">Inference Time: {{cap.inference_time}}</p>
 
 
-            <img src="{{cap.image.url}}" width=600 height=500></img>
+            <img src="{{cap.image.url}}" width=70% height=70%></img>
 
-            <h5 class="card-title">{{cap.pred_1}}: {{cap.conf_1}}%</h5>
+            <h3 class="col-sm-9 mb-3 text-muted">{{cap.pred_1}}: {{cap.conf_1}}%</h3>
 
             {% if cap.pred_2 %}
-                <h5 class="card-title">{{cap.pred_2}}: {{cap.conf_2}}%</h5>
+                <h3 class="col-sm-9 mb-3 text-muted">{{cap.pred_2}}: {{cap.conf_2}}%</h3>
             {% endif %}
 
             {% if cap.pred_3 %}
-                <h5 class="card-title">{{cap.pred_3}}: {{cap.conf_3}}%</h5>
+                <h3 class="col-sm-9 mb-3 text-muted">{{cap.pred_3}}: {{cap.conf_3}}%</h3>
             {% endif %}
 
             <a href="#" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">View details</a>
@@ -40,7 +42,14 @@
         </div>
         </div>
     </div>
+    {% empty %}
+    <br>
+    <h3 class="mx-auto"> No recent captures! Is your camera on and configured correctly? </h3>
 
+    <!-- <img class="center-block" src="https://media.wired.com/photos/5a14aa2e9a206f0acbac179f/master/pass/pig-tailed_macaque2.jpg"> -->
+    <!-- <div class="caption center-block">Test</div> -->
+
+</div>  
     {% endfor %}
 </div>
 
@@ -48,3 +57,8 @@
     
   
 {% endblock body %}  
+
+
+<script>
+    alert('{{warning_msg}}');
+</script>
