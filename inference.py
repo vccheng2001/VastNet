@@ -168,7 +168,7 @@ class Yolov3Tiny:
         left, top, right, bottom = bbox_coords
 
         # Draw a bounding box.
-        cv.rectangle(frame, (left, top), (right, bottom), (255, 178, 50), 3)
+        cv.rectangle(frame, (left, top), (right, bottom), (255, 178, 50), 10)
 
         label = '%.2f' % conf
 
@@ -178,10 +178,10 @@ class Yolov3Tiny:
             label = '%s:%s' % (self.classes[classId], label)
 
         #Display the label at the top of the bounding box
-        labelSize, baseLine = cv.getTextSize(label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+        labelSize, baseLine = cv.getTextSize(label, cv.FONT_HERSHEY_TRIPLEX, 1, 3)
         top = max(top, labelSize[1])
         cv.rectangle(frame, (left, top - round(1.5*labelSize[1])), (left + round(1.5*labelSize[0]), top + baseLine), (255, 255, 255), cv.FILLED)
-        cv.putText(frame, label, (left, top), cv.FONT_HERSHEY_SIMPLEX, 0.75, (0,0,0), 1)
+        cv.putText(frame, label, (left, top), cv.FONT_HERSHEY_TRIPLEX, 0.75, (0,0,0), 2)
 
 
     # Remove the bounding boxes with low confidence using non-maxima suppression

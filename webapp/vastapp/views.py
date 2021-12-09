@@ -12,6 +12,8 @@ import plotly.graph_objs as go
 
 import plotly.express as px
 import numpy
+from django.utils import timezone
+import pytz
 
 # user login/logout
 from django.contrib.auth.decorators import login_required
@@ -85,7 +87,8 @@ def home(request):
     
     if most_freq_animal in ['bear', 'bobcat']:
         warning_msg = f'Caution! Detecting a high number of {most_freq_animal}s in the area'
-    
+    else:
+        warning_msg = ''
         
 
 
@@ -190,20 +193,6 @@ def process_image(request):
 
         if request.FILES.get("image", None) is not None:
 
-            # Find your Account SID and Auth Token at twilio.com/console
-            # and set the environment variables. See http://twil.io/secure
-            # account_sid = 'AC147174888cada5d58041821c8e477d2c'
-            # auth_token = '353ed3df37e886ef162fd4376040ba6c'
-            # client = Client(account_sid, auth_token)
-
-            # message = client.messages \
-            #                 .create(
-            #                     body="VAST-Net noticed something unusual, deploy the drone!",
-            #                     from_='+18285547879',
-            #                     to='+16262176595'
-            #                 )
-
-            # print(message.sid)
 
                 
             
@@ -224,7 +213,8 @@ def process_image(request):
                 # create new Capture
                 cap = Capture()
                 cap.inference_time = inference_time
-                now =  datetime.datetime.now().isoformat()
+                # now =  datetime.datetime.now().isoformat()
+                now = timezone.now().isoformat()
                 cap.timestamp = now
                 cap.image.save(f'{now}.jpg', content) # save 
 
@@ -242,6 +232,25 @@ def process_image(request):
                     cap.pred_3 = predictions[2][0]
                     cap.conf_3 = to_percent(predictions[2][1])
                 except: pass
+
+
+
+                # Find your Account SID and Auth Token at twilio.com/console
+                # and set the environment variables. See http://twil.io/secure
+
+                if cap.pred_1 == "bear":
+                    account_sid = 'AC147174888cada5d58041821c8e477d2c'
+                    auth_token = '353ed3df37e886ef162fd4376040ba6c'
+                    client = Client(account_sid, auth_token)
+
+                    message = client.messages \
+                                    .create(
+                                        body="VAST-Net noticed something unusual, deploy the drone!",
+                                        from_='+18285547879',
+                                        to='+16262176595'
+                                    )
+                    print(message.sid)
+                
 
                 context["new_cap"] = cap
 
