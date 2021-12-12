@@ -3,7 +3,10 @@ import json
 import glob
 import shutil
 import numpy as np
-
+import cv2 as cv
+import requests
+import random
+import time
 
 # makes dataset 
 def make_dataset(classes, json_file, src_dir, dst_dir):
@@ -137,3 +140,33 @@ def write_train_test(data_dir, cfg_file):
 # data_dir = 'small_dataset'
 # cfg_dir = 'small_cfg'
 # write_train_test(data_dir, cfg_dir)
+
+
+
+
+# def copy_small_subset():
+#     root_dir = './darknet'
+#     test_data = os.path.join(root_dir, 'small_cfg/test.txt')
+#     imgs = []
+#     with open(test_data) as file:
+#         for f in file:
+            
+#             imgs.append(os.path.join(root_dir, f.strip()))
+
+#     imgs = reversed(sorted(imgs))
+    
+    
+#     for im in imgs:
+#         im_num = im[1:].split('.')[0][-4:]
+#         print(im_num)
+#         frame = cv.imread(im)
+
+#         # cv.imshow('Window', frame)
+
+#         # key = cv.waitKey(1000)#pauses for 3 seconds before fetching next image
+#         # if key == 27:#if ESC is pressed, exit loop
+#         #     cv.destroyAllWindows()
+#         #     break
+
+# copy_small_subset()
+

@@ -73,26 +73,35 @@ def home(request):
     freqs_dict = {k: v / total for total in (sum(counts_dict.values()),) for k, v in counts_dict.items()}
 
 
-    # display pie chart 
-    fig = px.pie(values=counts_dict.values(), names=counts_dict.keys())
-    background_color = 'black'
-    fig.update_layout(
-        hovermode="closest",
-        plot_bgcolor=background_color,
-        paper_bgcolor=background_color,
-        font=dict(color= 'white', size=24)
-    )
+    if all_preds != []: 
+        # display pie chart 
+        fig = px.pie(values=counts_dict.values(), names=counts_dict.keys())
+        background_color = 'black'
+        fig.update_layout(
+            hovermode="closest",
+            plot_bgcolor=background_color,
+            paper_bgcolor=background_color,
+            font=dict(color= 'white', size=24)
+        )
+        graph = fig.to_html(full_html=False, default_height=500, default_width=700)
 
-    most_freq_animal = max(counts_dict, key=counts_dict.get)
-    
-    if most_freq_animal in ['bear', 'bobcat']:
-        warning_msg = f'Caution! Detecting a high number of {most_freq_animal}s in the area'
     else:
+        graph = None
+
+    try:
+        most_freq_animal = max(counts_dict, key=counts_dict.get)
+        if most_freq_animal in ['bear', 'bobcat']:
+            warning_msg = f'Caution! Detecting a high number of {most_freq_animal}s in the area'
+   
+   
+    
+    except:
+        print('No captures yet!')
+        most_freq_animal = None
         warning_msg = ''
         
 
 
-    graph = fig.to_html(full_html=False, default_height=500, default_width=700)
 
 
 
@@ -101,16 +110,23 @@ def home(request):
     # Using plotly.express
     all_timestamps = Capture.objects.values_list('timestamp', flat = True)
 
-    df = px.data.stocks()
-    fig = px.line(df, x=all_timestamps, y=[random.randrange(0,7) for _ in range(len(all_timestamps))])
-    fig.update_layout(
-        hovermode="closest",
-        plot_bgcolor=background_color,
-        paper_bgcolor=background_color,
-        font=dict(color= 'white', size=24)
-    )
-    time_graph = fig.to_html(full_html=False, default_height=500, default_width=1200)
-
+    if all_timestamps != []:
+        try: 
+            # time_graph = None
+            df = px.data.stocks()
+            fig = px.line(df, x=all_timestamps, y=[random.randrange(0,7) for _ in range(len(all_timestamps))])
+            fig.update_layout(
+                hovermode="closest",
+                plot_bgcolor=background_color,
+                paper_bgcolor=background_color,
+                font=dict(color= 'white', size=24)
+            )
+            time_graph = fig.to_html(full_html=False, default_height=500, default_width=1200)
+        except:
+            time_graph = None
+    else:
+        time_graph = None
+        graph = None
     # fig.show()
 
 
@@ -238,18 +254,19 @@ def process_image(request):
                 # Find your Account SID and Auth Token at twilio.com/console
                 # and set the environment variables. See http://twil.io/secure
 
-                if cap.pred_1 == "bear":
-                    account_sid = 'AC147174888cada5d58041821c8e477d2c'
-                    auth_token = '353ed3df37e886ef162fd4376040ba6c'
-                    client = Client(account_sid, auth_token)
+                # if cap.pred_1 == "bear":
+                account_sid = 'AC147174888cada5d58041821c8e477d2c'
+                auth_token = '353ed3df37e886ef162fd4376040ba6c'
+                client = Client(account_sid, auth_token)
 
-                    message = client.messages \
-                                    .create(
-                                        body="VAST-Net noticed something unusual, deploy the drone!",
-                                        from_='+18285547879',
-                                        to='+16262176595'
-                                    )
-                    print(message.sid)
+                message = client.messages \
+                                .create(
+                                    body=f"VAST-Net noticed a {cap.pred_1} deploy the drone!",
+                                    from_='+18285547879',
+                                    to='+16262176595'
+                                    # to='+14088312252'
+                                )
+                print(message.sid)
                 
 
                 context["new_cap"] = cap
