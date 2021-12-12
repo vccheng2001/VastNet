@@ -90,8 +90,7 @@ def home(request):
 
     try:
         most_freq_animal = max(counts_dict, key=counts_dict.get)
-        if most_freq_animal in ['bear', 'bobcat']:
-            warning_msg = f'Caution! Detecting a high number of {most_freq_animal}s in the area'
+        warning_msg = f'Caution! Detecting a high number of {most_freq_animal}s in the area'
    
    
     
@@ -201,7 +200,7 @@ def update_profile(request):
     return render(request, 'vastapp/profile.html', context)
 #####################################################################
 
-@csrf_exempt
+@csrf_exempt #login_required
 def process_image(request):  
     context = {}
     
@@ -216,23 +215,41 @@ def process_image(request):
             # decode bytes into img 
             img = cv.imdecode(np.fromstring(img_file, np.uint8), cv.IMREAD_COLOR)
             # yolo detect 
-            img_with_annot, inference_time, predictions = yolo_detect(img)
+
+
+            args = Args()
+            args.conf_threshold = 0.85
+            args.weights = "../darknet/small.weights"
+            args.classes_file = '../darknet/small_cfg/small.names'
+            args.cfg = "../darknet/small_cfg/small.cfg"
+
+            frame, inference_time, predictions = yolo_detect(img, args)
+
+
+            # cv.imshow("predicted", frame)
+            # key = cv.waitKey(250)
+            # if key == 27:#if ESC is pressed, exit loop
+            #     cv.destroyAllWindows()
+
+
 
             if len(predictions) > 0:
+                print('predicted!')
 
                 predictions = filter_predictions(predictions)
 
                 # save as jpg in captures/ folder 
-                ret, buf = cv.imencode('.jpg', img_with_annot)
+                ret, buf = cv.imencode('.jpg', frame)
                 content = ContentFile(buf.tobytes())
 
                 # create new Capture
                 cap = Capture()
-                cap.inference_time = inference_time
-                # now =  datetime.datetime.now().isoformat()
-                now = timezone.now().isoformat()
-                cap.timestamp = now
-                cap.image.save(f'{now}.jpg', content) # save 
+                cap.inference_time = round(inference_time,3)
+
+                                
+
+                cap.timestamp = datetime.datetime.now()
+                cap.image.save(f'{cap.timestamp}.jpg', content) # save 
 
 
                 # save highest confidence class
@@ -254,20 +271,16 @@ def process_image(request):
                 # Find your Account SID and Auth Token at twilio.com/console
                 # and set the environment variables. See http://twil.io/secure
 
-                # if cap.pred_1 == "bear":
-                account_sid = 'AC147174888cada5d58041821c8e477d2c'
-                auth_token = '353ed3df37e886ef162fd4376040ba6c'
+                account_sid = 'AC420eee3ab4a46c49ad21686cf18ad554'
+                auth_token = 'bf0ffbf9ce9bacd05d7bbcc41ba0f41e'
                 client = Client(account_sid, auth_token)
 
                 message = client.messages \
                                 .create(
-                                    body=f"VAST-Net noticed a {cap.pred_1} deploy the drone!",
-                                    from_='+18285547879',
-                                    to='+16262176595'
-                                    # to='+14088312252'
-                                )
-                print(message.sid)
-                
+                                    body=f"[{cap.timestamp}] VAST-Net noticed a {cap.pred_1.lower()}!",
+                                    from_='+12077050576',
+                                    to='+14088312252'
+                                )                
 
                 context["new_cap"] = cap
 
@@ -291,19 +304,15 @@ def process_image(request):
 
 
 
-def yolo_detect(img):
-    args = Args()
-    args.data_path = "../darknet/data/"
-    args.cfg_path = "../darknet/cfg/"
+def yolo_detect(img, args):
     model = Yolov3Tiny(args)
-    args.custom_weights = './darknet/small.weights'
 
     
-    img_with_annot, inference_time, predictions = model.predict_img(img, plot=False)
+    frame, inference_time, predictions = model.predict_img(img, plot=False)
 
     
     # print(inference_time, predictions)
-    return img_with_annot, inference_time, predictions
+    return frame, inference_time, predictions
 
 
 

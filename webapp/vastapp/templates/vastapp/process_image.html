@@ -4,7 +4,7 @@
       
 {% block heading %}
 
-<h1 class="display-1">Recent Captures</h1>
+<h1 class="display-1 text-muted">Recent Captures</h1>
 
 {% endblock %}
 
@@ -20,12 +20,13 @@
     <div class="col-sm-4">
         <div class="card">
         <div class="card-body">
-            <h2 class="col-sm-9 text-muted">{{cap.timestamp}}</h2>
-            <p class="card-text">Inference Time: {{cap.inference_time}}</p>
+            <h2 class="col-sm-12 text-muted">{{cap.timestamp}}</h2>
+            <h5 class="card-text text-muted">Inference Time: {{cap.inference_time}}</h5>
 
 
             <img src="{{cap.image.url}}" width=70% height=70%></img>
 
+            <br><hr>
             <h3 class="col-sm-9 mb-3 text-muted">{{cap.pred_1}}: {{cap.conf_1}}%</h3>
 
             {% if cap.pred_2 %}
