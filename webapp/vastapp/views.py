@@ -15,6 +15,7 @@ import numpy
 from django.utils import timezone
 import pytz
 
+
 # user login/logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -248,13 +249,20 @@ def process_image(request):
 
                                 
 
-                cap.timestamp = datetime.datetime.now()
+                cap.timestamp = timezone.now()
                 cap.image.save(f'{cap.timestamp}.jpg', content) # save 
 
 
                 # save highest confidence class
                 cap.pred_1 = predictions[0][0]
                 cap.conf_1 = to_percent(predictions[0][1])
+
+                if cap.pred_1 == None:  
+                    context["captures"] = Capture.objects.all()
+                    return render(request, 'vastapp/process_image.html', context=context)  
+
+                else:
+                    print(f'{cap.pred_1}: {cap.conf_1}')
 
                 try:
                     cap.pred_2 = predictions[1][0]
@@ -283,14 +291,15 @@ def process_image(request):
                                 )                
 
                 context["new_cap"] = cap
-
-            
                 context["captures"] = Capture.objects.all()
 
-                # warning_msg = None
-                # if cap.pred_1 in ["bear", "bobcat"]:
-                #     warning_msg = f"Caution! A {cap.pred_1} has been detected."
-                # context["warning_msg"] = warning_msg
+                if cap.pred_1 in ["bear", "bobcat"]:
+                    warning_msg = f"Caution! A {cap.pred_1} has been detected."
+                    context["warning_msg"] = warning_msg
+                else:
+                    context["warning_msg"] = ""
+
+                    
                 cap.save()
             
                 return render(request, 'vastapp/process_image.html', context=context)
